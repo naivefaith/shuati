@@ -47,22 +47,28 @@ func maxCoinsV2(nums []int) (int, *[][]int) {
 }
 
 func DFS(left int, right int, boundCoinPt *[]int, resultMatrixPt *[][]int) int {
-	if left >= right-1 {
+	if left >= right-1 { //如果越界
 		return 0
 	}
 	boundCoin := *boundCoinPt
 	resultMatrix := *resultMatrixPt
-	if resultMatrix[left][right] > 0 {
+	if resultMatrix[left][right] > 0 { //如果已经有最优
 		return resultMatrix[left][right]
 	}
-	for i := left + 1; i < right; i++ {
-		sum := boundCoin[left] * boundCoin[i] * boundCoin[right]
-		sum += DFS(left, i, boundCoinPt, resultMatrixPt) + DFS(i, right, boundCoinPt, resultMatrixPt)
+	for i := left + 1; i < right; i++ { //在传入的子区间上搜索
+		sum := boundCoin[left] * boundCoin[i] * boundCoin[right]                                      //真正的边界lift和right
+		sum += DFS(left, i, boundCoinPt, resultMatrixPt) + DFS(i, right, boundCoinPt, resultMatrixPt) //压栈搜索，golang有栈深度上限
 		if sum > resultMatrix[left][right] {
 			resultMatrix[left][right] = sum
 		}
 	}
 	return resultMatrix[left][right]
+}
+
+//可以使用队列保存子结构避免压栈
+type subInterval struct {
+	left  int
+	right int
 }
 
 func main() {
